@@ -9,24 +9,26 @@ alpha=0.005; % Fixing the immune accessibility
 P=HNSCC_parameters_IL2(alpha); % Loading the parameters
 tspan=[0 70000];
 anti_PD1=1;
-x_post_CAN=[];
-x_post_T=[];
-x_post1_CAN=[];
-x_post1_T=[];
+x_post_CAN=[];  % Post-ICI total tumor cells for low IL-2 levels
+x_post_T=[];    % Post-ICI killer T cells for low IL-2 levels
+x_post1_CAN=[]; % Post-ICI total tumor cells for moderate IL-2 levels
+x_post1_T=[];   % Post-ICI killer T cells for moderate IL-2 levels
 
 %% Killer T cells vs tumor cells for IL-2 intake (Figure No. 7(a))
 % Purpose of the study: IL-2 based treatment works in an immune accessible environment
 figure
 ax2=axes();
 for k=1:1:length(C_IL2)
-[t_post,x_post]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,C_IL2(k),0,0,0,0,P),[0 70000],y_0);
+[t_post,x_post]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,C_IL2(k),0,0,0,0,P),[0 70000],y_0); % Tuning the fixed low level administered IL-2 rate 
 end
 
 for l=1:1:length(C_IL21)
-[t_post1,x_post1]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,C_IL21(l),0,0,0,0,P),[0 70000],y_0);
+[t_post1,x_post1]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,C_IL21(l),0,0,0,0,P),[0 70000],y_0); %Tuning the fixed moderate level administered IL-2 rate
 end
 x_post(x_post<0)=0;
 x_post1(x_post1<0)=0;
+% Plotting post-ICI tumor cells vs killer T cells for both the set of IL-2 administer rates.
+
 plot(log((x_post1(:,1)+x_post1(:,2)+x_post1(:,3))/(y_0(1)+y_0(2)+y_0(3)))/log(2),log((x_post1(:,9)+x_post1(:,8))/y_0(8))/log(2),'LineWidth',2,'LineStyle','--') % Plotting killer T-Tumor without IL2
 xlabel('Total tumor cells','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 %ylabel('Killer T cells\\(Without IL2)','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
@@ -43,7 +45,7 @@ box off
 figure
 IL_2U=[0:0.1:1]; % Initial IL-2
 for L=1:1:length(IL_2U)
-    y_0(17)=IL_2U(L);
+    y_0(17)=IL_2U(L);  % An initial IL-2 spike
 [t_post1,x_post1]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,0,0,0,0,0,P),[0 70000],y_0);
 plot(x_post1(:,17)/6000,x_post1(:,9)/5000,'LineWidth',2)        % Plotting IL-2 vs. Killer T cells
 xlabel('IL-2 level','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
@@ -62,6 +64,7 @@ P=HNSCC_parameters_IL2(alpha); % Loading the parameters
 for k=1:1:length(C_IL2_A)
 [t_post,x_post]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,C_IL2_A(k),0,0,0,0,P),[0 70000],y_1);
 x_post(x_post<0)=0;
+% Plotting the time profiles of killer T cells- two distinct post-ICI population for killer T cells: Characteristic of positive feedback
 plot(t_post,(x_post(:,8)+x_post(:,9))/5000,'LineWidth',2) % Plotting killer T cell profiles
 xlim([0 15])
 xlabel('Time','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
