@@ -38,12 +38,12 @@ y_0=[1089.2;4820.3;3302.5;4106.2;2576.4;0990.7;1340.2;4718.3;0;4673.2;2045.2;684
 alpha1=[0.01 0.02 0.04 0.05 0.1 0.3 0.5]; % Fraction of CAFs engadged in building the barrier
 Y_LIF=22531; % Maximum LIF Carrying capacity. Can be calculated from the equation describing LIF dynamics
 for l=1:1:length(alpha1)
-    P=HNSCC_parameters(alpha1(l));
+    P=HNSCC_parameters(alpha1(l)); % Simulating for different immune accessibility indices
     [t_pre,x_pre]=ode23s(@(t,y)HNSCC_mod(t,y,0,0,0,0,0,0,P),[0 70000],y_0);
     [t_post,x_post]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,0,0,0,0,0,P),[0 70000],x_pre(length(x_pre(:,1)),:));
     I(l)=(1-tanh(alpha1(l)*P(20)*x_pre(length(x_pre(:,1)),14)))*100; %Calculating Immune accessibility index
-    Tum_tot=x_post(:,1:6);
-     plot(x_post(:,18)/Y_LIF,sum(Tum_tot,2)/30000,'LineWidth',2)               %Plotting Total tumor cells vs LIF
+    Tum_tot=x_post(:,1:6);  % Total post-ICI tumor cells
+     plot(x_post(:,18)/Y_LIF,sum(Tum_tot,2)/30000,'LineWidth',2)               %Plotting post-ICI Total tumor cells vs LIF
   xlabel('Total tumor cells','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
     ylabel('LIF','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 hold on
@@ -60,7 +60,7 @@ for l=1:1:length(alpha1)
     [t_post,x_post]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,0,0,0,0,0,P),[0 70000],x_pre(length(x_pre(:,1)),:));
     y_0=x_pre(length(x_pre),:);
     I(l)=(1-tanh(alpha1(l)*P(20)*x_pre(length(x_pre(:,1)),14)))*100; % Calculating immune accessibility index
-plot(t_post,x_post(:,14)/5000,'LineWidth',2)                            % Plotting CAF vs time
+plot(t_post,x_post(:,14)/5000,'LineWidth',2)                            % Plotting post-ICI CAF vs time
 xlabel('Time','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 ylabel('Post-ICI CAF','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 xlim([0 5])
