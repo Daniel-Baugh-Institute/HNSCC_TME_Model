@@ -9,26 +9,25 @@ Prol_death=[1:2:10]; % Ratio of proliferation to death rate
 %% Studying the time profiles for Exhausted and killer T cells pre-ICI for different killer to exhaustion rate (Figure no. 3(a-b))
 % Purpose of the study: Colonization of the immune landscape by the exhausted T cells for different exhaustion rate leading to overall immune-desert
 % Setting the proliferation rate of the killer-T cells
-Q_ab(30)=P(30)*Prol_death(3);
-Q_ab(31)=15;
+Q_ab(30)=P(30)*Prol_death(3); % Setting a high proliferation rate than the death rate for killer T cells
+Q_ab(31)=15; % The proliferation rate of PD1- killer T cells
 TKPD_TEX=[1:5:35]; % Different conversion rate multiplier from killer to exhausted T cells 
 figure
 for m=1:1:length(TKPD_TEX)
 K_TEX=TKPD_TEX(m)*P(36); % Modifying the killer-exhaustion conversion rate
-Q_ab(36)=K_TEX;
-subplot(1,2,1)
+Q_ab(36)=K_TEX; % Varying the exhaustion rate
 [t_pre,x_pre]=ode15s(@(t,y)HNSCC_mod(t,y,0,0,0,0,0,0,Q_ab),[0 70000],y_0);
 x_pre(x_pre<0)=0;
+
 subplot(1,2,1)
-% %yyaxis left
-plot(t_pre(1:250),x_pre(1:250,8)/5000,'LineWidth',2);
+plot(t_pre(1:250),x_pre(1:250,8)/5000,'LineWidth',2); % Plotting the time profile of killer T cells
 xlabel('Time','FontSize',18,'FontWeight','bold','FontName','Palatino Linotype')
 ylabel('Killer T cells (x_{T_K})','FontSize',18,'FontWeight','bold','FontName','Palatino Linotype')
 xlim([0 5]) 
 % % yyaxis right 
 hold on
 subplot(1,2,2)
-plot(t_pre,x_pre(:,12)/5000,'LineWidth',2,'LineStyle','-')
+plot(t_pre,x_pre(:,12)/5000,'LineWidth',2,'LineStyle','-') % Plotting the time profile of killer T cells
 xlabel('Time','FontSize',18,'FontWeight','bold','FontName','Palatino Linotype')
 ylabel('Exhausted T cells (x_{T_{Exh}})','FontSize',18,'FontWeight','bold','FontName','Palatino Linotype')
 hold on
@@ -42,13 +41,13 @@ K_prol=[]; % Proliferation rate of killer T cells
 K_death=[]; % Death rate of killer T cells
 Prol_death=[1:2:10]; % Ratio of proliferation to death rate
 Q_C(30)=P(30)*Prol_death(3); % Setting the proliferation rate of the killer-T cells
-Q_C(36)=72;
+Q_C(36)=72; % Setting very high exhaustion rate that guarantees immune desert
 figure
 ax2=axes();
 CAF_TREG=[1:2:9];   % CAF-TReg multiplier             
 for l=1:1:length(CAF_TREG)
 K_CAFTREG=CAF_TREG(l)*P(40); % Modifying the wild type CAF-TREG interaction constant
-Q_C(40)=K_CAFTREG;
+Q_C(40)=K_CAFTREG; % Tuning the Treg promoting role of CAF
 [t_pre,x_pre]=ode15s(@(t,y)HNSCC_mod(t,y,0,0,0,0,0,0,Q_C),[0 70000],y_0);
 x_pre(x_pre<0)=0;
 plot(log((1+x_pre(:,11)/5000))/log(2),log2(1+x_pre(:,8)/5000),'LineWidth',2); % The T_Reg population range is too wide to spot the significant transition point with a default representation
@@ -65,25 +64,25 @@ end
 figure
 Prol_death_NPD1=[0.5 5];
 Q_d=P;
-Q_d(11)=5;
-Q_d(16)=1500;
-Q_d(30)=Prol_death_NPD1(1)*Q_d(42);
-Q_d(31)=Q_d(30);
+Q_d(11)=5; % Fixing moderate constant resource rate
+Q_d(16)=1500; % Fixing the cytotoxicity of the killer T cells
+Q_d(30)=Prol_death_NPD1(1)*Q_d(42); % Critically low (< death rate) proliferation rate for killer T cells: Ensuring low-proliferation based immune desert
+Q_d(31)=Q_d(30); % Identical proliferation rate for PD1- killer T cells
 anti_PD1=1;
 [t_post_low_prolif,x_post_low_prolif]=ode23s(@(t,y)HNSCC_mod(t,y,anti_PD1,0,0,0,0,0,Q_d),[0 70000],y_0+200); % For the low-proliferation-driven immune-desert
 plot(x_post_low_prolif(:,12)/5000,x_post_low_prolif(:,9)/5000,'LineWidth',2,'LineStyle','--')
 xlabel('Exhausted T cells','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 ylabel('PD1^- Killer T cells','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 hold on
-Q_d(30)=Prol_death_NPD1(2)*Q_d(42);
-Q_d(31)=Q_d(30);
-Q_d(36)=72;
-PD1_NPD1=[0.5:5:25];
+Q_d(30)=Prol_death_NPD1(2)*Q_d(42); % Moderate (>death rate) proliferation rate of killer T cells: Ensuring exhaustion-driven immune desert
+Q_d(31)=Q_d(30); % Idnetical proliferation rate for PD1- killer T cells
+Q_d(36)=72; % Very high exhaustion rate: Exhaustion-driven immune desert
+PD1_NPD1=[0.5:5:25]; % Binding affinity of anti-PD1
 L=length(PD1_NPD1);
 for m=0:1:length(PD1_NPD1)-1
-Q_d(35)=PD1_NPD1(L-m);
+Q_d(35)=PD1_NPD1(L-m); % Varying the binding affinity of anti-PD1
 [t_post,x_post]=ode15s(@(t,y)HNSCC_mod(t,y,anti_PD1,0,0,0,0,0,Q_d),[0 70000],y_0+200);
-plot(x_post(:,12)/5000,x_post(:,9)/5000,'LineWidth',2)
+plot(x_post(:,12)/5000,x_post(:,9)/5000,'LineWidth',2) % Plotiing exhausted vs killer T cells for different anti-PD1 binding rate
 xlabel('Exhausted T cells','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 ylabel('PD1^- Killer T cells','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 hold on
@@ -121,7 +120,7 @@ hold on
 end
 
 %% In presence of Lactate knockout (Figure no. 3(f))
-% Purpose of the study: Lactate improves the overall scenario
+% Purpose of the study: Lactate improves the overall scenario only for exhaustion-driven immune desert
 figure
 C_LAC=10;           % Lactate knockout rate
 Prol_death_NPD1=[0.5 5];
