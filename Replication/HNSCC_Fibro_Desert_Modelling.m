@@ -56,15 +56,16 @@ hold on
 plot((x_pre(:,9)+x_pre(:,8))/5000,(x_pre(:,12))/5000,'Linewidth',2,'LineStyle','--') % Pre-ICI T_exhausted-Killer T trajectory. This plot does not figure in the main manuscript
 xlabel('Killer T cell population (x_{T_K})','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 ylabel('Exhausted T cells','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
-subplot(1,3,3)                                                                      % Ploting the time profiles for killer and exhausted T cells pre- and port- ICI (Fig 4(c))
-plot(t_pre(1:150),(x_pre(1:150,9)+x_pre(1:150,8))/5000,'Linewidth',2,'LineStyle','--')
+subplot(1,3,3)                                                                      
+% Ploting the time profiles for killer and exhausted T cells pre- and post- ICI (Fig 4(c))
+plot(t_pre(1:150),(x_pre(1:150,9)+x_pre(1:150,8))/5000,'Linewidth',2,'LineStyle','--') %Pre ICI Killer T cells
 hold on
-plot(t_pre(1:150),x_pre(1:150,12)/5000,'Linewidth',2,'LineStyle','--');
+plot(t_pre(1:150),x_pre(1:150,12)/5000,'Linewidth',2,'LineStyle','--'); % Pre-ICI Exhausted T cells
 t_post1=t_pre(150)+t_post;
 hold on
-plot(t_post1,(x_post(:,9)+x_post(:,8))/5000,'Linewidth',2)
+plot(t_post1,(x_post(:,9)+x_post(:,8))/5000,'Linewidth',2) % Post-ICI Killer T cells
 hold on
-plot(t_post1,x_post(:,12)/5000,'Linewidth',2);
+plot(t_post1,x_post(:,12)/5000,'Linewidth',2); % Post-ICI Exhausted T cells
 xlabel('Time','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 ylabel('T cells population','FontSize',16,'FontWeight','bold','FontName','Palatino Linotype')
 xlim([0 1])
